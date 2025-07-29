@@ -48,4 +48,17 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    /**
+     * 
+     * realciones
+     */
+    public function suscripcion()
+    {
+        return $this->hasOne(Suscripcion::class);
+    }
+
+    public function clientes()
+    {
+        return $this->hasMany(Client::class, 'usuario_id');
+    }
 }
