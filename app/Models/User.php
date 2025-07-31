@@ -6,8 +6,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\FilamentUser;
 
-class User extends Authenticatable
+use Filament\Panel;
+
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -60,5 +63,46 @@ class User extends Authenticatable
     public function clientes()
     {
         return $this->hasMany(Client::class, 'usuario_id');
+    }
+    public function rol()
+    {
+        return $this->belongsTo(Rol::class);
+    }
+
+    /**
+     * Funciones
+     */
+
+    public function hasRole(string $role): bool
+    {
+        return $this->rol->nombre === $role;
+    }
+
+    public function admin(User $user): bool
+    {
+
+        if ($user->rol_id == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function verirol(User $user)
+    {
+
+        return $user->rol->nombre;
+    }
+
+    //accesos de panel
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if ($this->hasRole('Administrador General')) {
+            return true;
+        }
+
+        if ($panel->getId() === 'home' && $this->hasRole('Usuario')) {
+            return true;
+        }
+        return false;
     }
 }

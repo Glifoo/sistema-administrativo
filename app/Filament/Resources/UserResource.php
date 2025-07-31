@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
@@ -23,7 +24,36 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Section::make('Publicidad')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('lastname')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('phone')
+                            ->tel()
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255),
+
+                        Forms\Components\TextInput::make('password')
+                            ->password()
+                            ->hiddenOn(['edit'])
+                            ->required()
+                            ->maxLength(255),
+
+                        Forms\Components\Select::make('rol_id')
+                            ->relationship('rol', 'nombre')
+                            ->required()
+                            ->preload()
+                            ->searchable(),
+                    ]),
             ]);
     }
 
@@ -42,6 +72,9 @@ class UserResource extends Resource
 
                 tables\Columns\TextColumn::make('email')
                     ->label('Apellido'),
+
+                tables\Columns\TextColumn::make('rol.nombre')
+                    ->label('Rol'),
             ])
             ->filters([
                 //
