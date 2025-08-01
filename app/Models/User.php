@@ -105,4 +105,11 @@ class User extends Authenticatable implements FilamentUser
         }
         return false;
     }
+
+    protected static function booted(): void
+    {
+        static::creating(function (User $user) {
+            $user->rol_id = '2';
+        });
+    }
 }

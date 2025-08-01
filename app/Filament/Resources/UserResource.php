@@ -50,7 +50,7 @@ class UserResource extends Resource
 
                         Forms\Components\Select::make('rol_id')
                             ->relationship('rol', 'nombre')
-                            ->required()
+                           
                             ->preload()
                             ->searchable(),
                     ]),
@@ -62,16 +62,16 @@ class UserResource extends Resource
         return $table
             ->columns([
                 tables\Columns\TextColumn::make('name')
-                    ->label('Nombre de usuario'),
+                    ->label('Nombre'),
 
                 tables\Columns\TextColumn::make('lastname')
                     ->label('Apellido'),
 
                 tables\Columns\TextColumn::make('phone')
-                    ->label('Apellido'),
+                    ->label('Celular'),
 
                 tables\Columns\TextColumn::make('email')
-                    ->label('Apellido'),
+                    ->label('Email'),
 
                 tables\Columns\TextColumn::make('rol.nombre')
                     ->label('Rol'),
