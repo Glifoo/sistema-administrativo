@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->text('descripcion');
-            $table->decimal('precio', 10, 2)->default(0.00);
-            $table->integer('duaracion')->default(1);
+            $table->decimal('preciounitario', 10, 2)->default(0.00);
+            $table->decimal('descuento', 10, 2)->default(0.00);
+            $table->integer('duracion')->default(1);
             $table->text('image_url')->nullable();
             $table->boolean('estado')->default(0);
             $table->timestamps();
