@@ -2,6 +2,10 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Home\Pages\Auth\EditProfile;
+use App\Filament\Home\Resources\NoResource\Pages\Auth\Register as AuthRegister;
+use App\Http\Middleware\Checkfecha;
+use App\Http\Middleware\VerificarSuscripcionActiva;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -17,6 +21,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Navigation\MenuItem;
 
 class HomePanelProvider extends PanelProvider
 {
@@ -27,6 +32,9 @@ class HomePanelProvider extends PanelProvider
             ->id('home')
             ->path('home')
             ->login()
+            ->profile(EditProfile::class)
+            // ->topNavigation()
+            ->registration(AuthRegister::class)
             ->colors([
                 'primary' => Color::Blue,
             ])
@@ -53,6 +61,9 @@ class HomePanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                Checkfecha::class,
+                VerificarSuscripcionActiva::class,
+
             ]);
     }
 }

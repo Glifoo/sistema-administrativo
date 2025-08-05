@@ -12,7 +12,7 @@
                           <p class="tarjeta__descripcion"> {!! str( $item->descripcion)->sanitizeHtml() !!} </p>
                     </div>
                     <div class="tarjeta__precio">
-                        <p class="tarjeta__descripcion">{{ number_format($item->precio_final, 2) }} Bs. </p>
+                        <p class="tarjeta__descripcion">{{ number_format($item->preciounitario, 2) }} Bs. </p>
                     </div>
 
                     <div class="tarjeta__footer">
@@ -20,9 +20,9 @@
                             $encryptedId = Crypt::encrypt($item->id);
                         @endphp
 
-                        {{-- <x-layouts.btnenviodat class="modificar" rutaEnvio="registro" dato="{{ $encryptedId }}" 
+                        <x-layouts.btnenviodat class="modificar" rutaEnvio="registro" dato="{{ $encryptedId }}" 
                             nombre="REGISTRATE">
-                        </x-layouts.btnenviodat> --}}
+                        </x-layouts.btnenviodat>
 
                     </div>
 

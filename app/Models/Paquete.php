@@ -46,10 +46,13 @@ class Paquete extends Model
       Storage::disk('public')->delete($ticket->image_url);
     });
   }
-  public function getPrecioFinalAttribute()
+  public function calcularPrecioFinal(int $meses): float
   {
-    $precioConDuracion = $this->preciounitario * $this->duracion;
-    $descuento = $precioConDuracion * ($this->descuento / 100);
-    return $precioConDuracion - $descuento;
+    $precioBruto   = $this->preciounitario * $meses;
+    $descuento     = $precioBruto * ($this->descuento / 100);
+    $precioFinal   = $precioBruto - $descuento;
+
+    // Redondeo a 2 decimales
+    return round($precioFinal, 2);
   }
 }

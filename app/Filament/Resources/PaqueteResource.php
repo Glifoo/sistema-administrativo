@@ -21,6 +21,8 @@ class PaqueteResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-s-briefcase';
     protected static ?string $navigationGroup = 'Productos Glifoo';
+    protected static ?int $navigationSort = 5;
+
 
     public static function form(Form $form): Form
     {

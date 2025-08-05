@@ -6,6 +6,7 @@ use App\Filament\Home\Resources\ClientResource\Pages;
 use App\Filament\Home\Resources\ClientResource\RelationManagers;
 use App\Models\Client;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -16,16 +17,43 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ClientResource extends Resource
 {
     protected static ?string $model = Client::class;
-     protected static ?string $navigationIcon = 'heroicon-s-users';
+    protected static ?string $navigationIcon = 'heroicon-s-users';
     protected static ?string $navigationGroup = 'Datos de Usuarios';
     protected static ?string $navigationLabel = 'Clientes';
-     protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 1;
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('usuario_id', auth()->id());
+    }
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Section::make('Clientes')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('nombre')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('apellido')
+                            ->maxLength(255),
+
+                        Forms\Components\TextInput::make('contacto')
+                            ->tel()
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255),
+
+                        Forms\Components\TextInput::make('nit')
+                            ->maxLength(255),
+
+                        Forms\Components\TextInput::make('email')
+                            ->maxLength(255),
+
+
+                    ]),
             ]);
     }
 
@@ -33,13 +61,21 @@ class ClientResource extends Resource
     {
         return $table
             ->columns([
-                //
+                tables\Columns\TextColumn::make('nombre')
+                    ->label('Nombre'),
+
+                tables\Columns\TextColumn::make('contacto')
+                    ->label('Contacto'),
+
+                tables\Columns\TextColumn::make('nit')
+                    ->label('Nit'),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

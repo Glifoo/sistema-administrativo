@@ -18,13 +18,18 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-s-users';
+    protected static ?string $navigationGroup = 'Datos de Usuarios';
+
+    protected static ?int $navigationSort = 1;
+
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make('Publicidad')
+                Section::make('Usuario')
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
@@ -49,8 +54,7 @@ class UserResource extends Resource
                             ->maxLength(255),
 
                         Forms\Components\Select::make('rol_id')
-                            ->relationship('rol', 'nombre')
-                           
+                            ->relationship('rol', 'nombre')                           
                             ->preload()
                             ->searchable(),
                     ]),

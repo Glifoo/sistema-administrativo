@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 
+
 use Filament\Panel;
 
 class User extends Authenticatable implements FilamentUser
@@ -22,11 +23,11 @@ class User extends Authenticatable implements FilamentUser
      */
     protected $fillable = [
         'name',
-        'email',
         'lastname',
-        'password',
+        'email',
         'phone',
-        'logo'
+        'logo',
+        'password',
     ];
 
     /**
@@ -64,6 +65,7 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(Client::class, 'usuario_id');
     }
+
     public function rol()
     {
         return $this->belongsTo(Rol::class);
@@ -72,6 +74,11 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Funciones
      */
+
+    public function tieneSuscripcionActiva(): bool
+    {
+        return $this->suscripcion()->where('estado', true)->exists();
+    }
 
     public function hasRole(string $role): bool
     {

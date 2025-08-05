@@ -17,6 +17,6 @@ class Estatusell extends Model
 
     public function sells()
     {
-        return $this->hasMany(Sell::class, 'estado_id');
+        return $this->hasMany(Sell::class, 'estadov_id');
     }
 }

@@ -11,6 +11,6 @@ class PlanesController extends Controller
     {
         $productos=Paquete::all();
         
-        return view('./productos/planes',compact('productos'));
+        return view('productos/planes',compact('productos'));
     }
 }
