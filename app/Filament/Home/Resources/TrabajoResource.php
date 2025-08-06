@@ -17,6 +17,9 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Filters\SelectFilter;
 
 class TrabajoResource extends Resource
 {
@@ -28,14 +31,24 @@ class TrabajoResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return static::getModel()::whereHas('cliente', function ($query) {
+            $query->where('usuario_id', auth()->id());
+        })->count();
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('cliente', function ($query) {
+                $query->where('usuario_id', auth()->id());
+            });
     }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make('Clientes')
+                Section::make('Datos técnicos del Trabajos')
                     ->columns(3)
                     ->schema([
 
@@ -44,11 +57,7 @@ class TrabajoResource extends Resource
                             ->searchable()
                             ->helperText('Elija el nombre de uno de sus clientes.')
                             ->preload()
-                            ->options(function () {
-                                return Client::query()
-                                    ->whereBelongsTo(auth()->user(), 'user') 
-                                    ->pluck('nombre', 'id');
-                            })
+                            ->options(Client::optionsForAuthUser())
                             ->required(),
 
                         Forms\Components\TextInput::make('trabajo')
@@ -121,7 +130,7 @@ class TrabajoResource extends Resource
                     ->searchable(),
 
                 tables\Columns\TextColumn::make('estado')
-                    ->label('Estado del trabajo')
+                    ->label('Estado')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
                         'por cotizar' => 'gray',
@@ -135,10 +144,21 @@ class TrabajoResource extends Resource
                     ->searchable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('cliente')
+                    ->relationship(
+                        'cliente',
+                        'nombre',
+                        fn(Builder $query) => $query->where('usuario_id', auth()->id())
+                    )
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

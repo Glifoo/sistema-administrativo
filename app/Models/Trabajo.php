@@ -41,4 +41,9 @@ class Trabajo extends Model
     {
         return $this->hasMany(Insumo::class, 'trabajo_id');
     }
+    /**
+     * 
+     * Metodos
+     */
+    
 }

@@ -10,6 +10,8 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -62,20 +64,34 @@ class ClientResource extends Resource
         return $table
             ->columns([
                 tables\Columns\TextColumn::make('nombre')
+                    ->searchable()
                     ->label('Nombre'),
 
                 tables\Columns\TextColumn::make('contacto')
                     ->label('Contacto'),
 
+                tables\Columns\TextColumn::make('email')
+                    ->searchable()
+                    ->label('email'),
+
                 tables\Columns\TextColumn::make('nit')
                     ->label('Nit'),
+
+                tables\Columns\TextColumn::make('created_at')
+                    ->label('Fecha de creacíon')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault:true),
+
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                 Tables\Actions\DeleteAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
