@@ -23,9 +23,6 @@ return new class extends Migration
                 ->constrained('trabajos')
                 ->onDelete('cascade');
 
-            $table->foreignId('medida_id')  
-                ->constrained('medidas');
-
             $table->timestamps();
         });
     }

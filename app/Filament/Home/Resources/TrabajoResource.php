@@ -3,6 +3,7 @@
 namespace App\Filament\Home\Resources;
 
 use App\Filament\Home\Resources\TrabajoResource\Pages;
+use App\Filament\Home\Resources\TrabajoResource\Pages\CotizarTrabajo;
 use App\Filament\Home\Resources\TrabajoResource\RelationManagers;
 use App\Models\Client;
 use App\Models\Trabajo;
@@ -29,11 +30,13 @@ class TrabajoResource extends Resource
     protected static ?string $navigationLabel = 'Trabajos';
     protected static ?int $navigationSort = 2;
 
-    public static function getNavigationBadge(): ?string
+    public static function contarPorCotizar(): int
     {
-        return static::getModel()::whereHas('cliente', function ($query) {
-            $query->where('usuario_id', auth()->id());
-        })->count();
+        return self::where('estado', 'por cotizar')
+            ->whereHas('cliente', function ($query) {
+                $query->where('usuario_id', auth()->id());
+            })
+            ->count();
     }
 
     public static function getEloquentQuery(): Builder
@@ -121,19 +124,23 @@ class TrabajoResource extends Resource
                     ->label('Trabajo')
                     ->searchable(),
 
+                tables\Columns\TextColumn::make('cantidad')
+                    ->numeric()
+                    ->label('Cantidad'),
+
                 tables\Columns\TextColumn::make('Costoproduccion')
                     ->label('Costo de producción')
                     ->searchable(),
 
                 tables\Columns\TextColumn::make('gananciaefectivo')
-                    ->label('Costo de producción')
+                    ->label('Ganancia')
                     ->searchable(),
 
                 tables\Columns\TextColumn::make('estado')
                     ->label('Estado')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
-                        'por cotizar' => 'gray',
+                        'por cotizar' => 'warning',
                         'rechazado' => 'danger',
                         'cotizado' => 'success',
                     })
@@ -155,15 +162,27 @@ class TrabajoResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    ViewAction::make()
+                        ->color(fn(Trabajo $record): string => $record->estado === 'cotizado' ? 'success' : 'success'),
+
+                    Tables\Actions\EditAction::make()
+                        ->color(fn(Trabajo $record): string => $record->estado === 'por cotizar' ? 'success' : 'gray')
+                        ->disabled(fn(Trabajo $record): bool => $record->estado === 'cotizado'),
+
+                    Tables\Actions\Action::make('cotizar')
+                        ->label('Cotizar')
+                        ->icon('heroicon-o-clipboard-document-list')
+                        ->url(fn(Trabajo $record): string => route('filament.home.resources.trabajos.cotizar', ['record' => $record]))
+                        ->color(fn(Trabajo $record): string => $record->estado === 'por cotizar' ? 'success' : 'gray')
+                        ->disabled(fn(Trabajo $record): bool => $record->estado === 'cotizado'),
+
+                    Tables\Actions\DeleteAction::make()
+                        ->color(fn(Trabajo $record): string => $record->estado === 'cotizado' ? 'gray' : 'danger')
+                        ->disabled(fn(Trabajo $record): bool => $record->estado === 'cotizado'),
                 ])
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\BulkActionGroup::make([]),
             ]);
     }
 
@@ -180,6 +199,7 @@ class TrabajoResource extends Resource
             'index' => Pages\ListTrabajos::route('/'),
             'create' => Pages\CreateTrabajo::route('/create'),
             'edit' => Pages\EditTrabajo::route('/{record}/edit'),
+            'cotizar' => CotizarTrabajo::route('/{record}/cotizar'),
         ];
     }
 }
