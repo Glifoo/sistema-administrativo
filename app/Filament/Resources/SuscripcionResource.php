@@ -100,6 +100,7 @@ class SuscripcionResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('fecha_fin')
+                    ->label('Finsuscripcion')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('dias_restantes_texto')
