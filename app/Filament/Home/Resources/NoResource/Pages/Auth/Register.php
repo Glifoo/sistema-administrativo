@@ -5,6 +5,7 @@ namespace App\Filament\Home\Resources\NoResource\Pages\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Component;
 use App\Filament\Home\Resources\NoResource;
+use App\Mail\Pedidos;
 use Filament\Pages\Auth\Register as BaseRegister;
 use Filament\Resources\Pages\Page;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ use App\Models\Suscripcion;
 use App\Models\User;
 use Filament\Forms\Components\TextInput;
 use Carbon\CarbonImmutable as Carbon;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 
 class Register extends BaseRegister
@@ -140,14 +142,20 @@ class Register extends BaseRegister
             'fecha_fin' => $fechaFin,
         ]);
 
+        // 3 Crear la venta 
         $total = $paquete->calcularPrecioFinal($meses);
-        
         $cuenta = Sell::create([
             'suscripcion_id' => $suscripcion->id,
-            'total'          => $total, 
+            'total'          => $total,
             'fecha' => now(),
             'concepto' => "suscripcion",
         ]);
+
+        // 6. Envio email
+        $adminEmails = User::where('rol_id', 1)->pluck('email')->toArray();
+        if (!empty($adminEmails)) {
+            Mail::to($adminEmails)->send(new Pedidos($user, $paquete, $meses));
+        }
         return $user;
     }
     protected function getRedirectUrl(): string

@@ -31,7 +31,7 @@ class Sell extends Model
 
     public function estado()
     {
-        return $this->belongsTo(EstatuSell::class, 'estadov_id');
+        return $this->belongsTo(Estatusell::class, 'estadov_id');
     }
     /**
      * 
